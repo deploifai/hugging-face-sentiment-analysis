@@ -8,6 +8,12 @@ import tensorflow as tf
 from keras import Sequential, Model
 from keras.layers import Embedding, Flatten, GlobalAveragePooling1D, Dense, Bidirectional, LSTM
 
+import mlflow
+import mlflow.tensorflow
+
+mlflow.set_tracking_uri('https://community.mlflow.deploif.ai')
+mlflow.set_experiment("Deploifai/hugging-face-sentiment-analysis/hugging-face-training")
+
 logger = logging.getLogger(__name__)
 
 def process_dataset(dataset):
@@ -17,6 +23,8 @@ def process_dataset(dataset):
   sequences = [tokenizer(s)['input_ids'] for s in sentences]
   padded = pad_sequences(sequences=sequences, padding='post', maxlen=35)
   return padded, labels
+
+mlflow.tensorflow.autolog(log_models=False)
 
 train_dataset = load_dataset("tweet_eval", "emoji", split='train')
 test_dataset = load_dataset("tweet_eval", "emoji", split='test')
